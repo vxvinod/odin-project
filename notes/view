@@ -1,3 +1,6 @@
+
+Sorry guys for not posting my learning as i was collecting the the things made the time wipe out of my eyes here we start the Rails with View part been discussed.
+
 View :
 
 View is the simpelst part of MVC structure at the basic level it is just a HTML boilerplate where you can play with instance variable received from the controller and placing it to the browser.
@@ -84,4 +87,64 @@ partials can ber rendered like
 
  To use the variable in your partial file, you drop the @ and call it like a normal variable.
 
+Implicit Partials:
+
+if we want to render all users list in User model then we can have a seperate partials which will do this .
+
+index file will be like :
+   # app/views/index.html.erb
+    <h1>Users</h1>
+    <ul>
+      <% @users.each do |user| %>
+        <%= render "user", :locals => {:user => user} %>
+      <% end %>
+    </ul>
+
+partial _user.html.erb
+
+ # app/views/_user.html.erb
+    <li><%= "#{user.first_name} #{user.last_name}, #{user.email}" %></li>
+
+
+Rails Magic Way of rendering:
+    <%= render "user", :locals => {:user => user} %>
+instead of rendering and passing :locals explicitly. we can just say render user
+
+
+   # app/views/index.html.erb
+    <h1>Users</h1>
+    <ul>
+      <% @users.each do |user| %>
+        <%= render user %>     
+      <% end %>
+    </ul>
+
+*Rails will render _user.html.erb and passes the 'user' variable automatically.
+
+if we want to render whole bunch of users then 
+
+  # app/views/index.html.erb
+    <h1>Users</h1>
+    <ul>
+      <%= render @users %>
+    </ul>
+
+this will automatically render _user.html.erb and iterated the users variable and prints it.
+
+Helper Methods:
+
+Rails provide many handy helper methods can be accessed from view.
+
+  <%= link_to "See All Users", users_path %>
+
+  users_path = renders the '/users' URL
+  users_url = renders the full URL.
+
+Asset Tags:
+
+Rails provide helper methods to grab CSS and javascript files.
+
+<%= stylesheet_link_tag "your_stylesheet" %>
+    <%= javascript_include_tag "your_javascript" %>
+    <%= image_tag "happy_cat.jpg" %>
 
