@@ -1,0 +1,70 @@
+Form Basics
+
+Viewing what your form submits :
+
+to check what forms are getting submitted to Rails app.for that we need to check rails server
+
+Started POST "/user" for 127.0.0.1 at 2013-11-21 19:10:47 -0800
+Processing by UsersController#create as HTML
+Parameters: {"utf8"=>"✓", "authenticity_token"=>"jJa87aK1OpXfjojryBk2Db6thv0K3bSZeYTuW8hF4Ns=", "email"=>"foo@bar.com", "commit"=>"Submit Form"}
+
+Rails Server info:
++ the first line which HTTP method used.and which route the form went to.
++ Second line tells which controller and action the form will be handled by.
++ Third line contains everything that will getstuffed in to 'params' hash 
+
+Railsyfying your form:
+
+Rails require to vefify that the form was actually submitted from the page you generated.so Rails generated 'authenticity token' to match the form with session and the application.
+
+so,if you want to create your own form handled by rails we need to provide token.Rails provide method 'form_authenticity_token'.
+
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+
++ each of the form inputs are accessed by 'name' tags from params using params[:name_attributes]
+
+ ...
+    <input type="text" name="description">
+    ...
+
+ above form inputs can be accessed by params[:description]
+
+ Nested hash :
+
+  ...
+    <input type="text" name="user[first_name]">
+    <input type="text" name="user[last_name]">
+    <input type="text" name="user[email]">
+    ...
+
+    Those inputs will now get transformed into a nested hash under the :user key. The server output becomes:
+
+Parameters: {"utf8"=>"✓", "authenticity_token"=>"jJa87aK1OpXfjojryBk2Db6thv0K3bSZeYTuW8hF4Ns=", "user"=>{"first_name"=>"foo","last_name"=>"bar","email"=>"foo@bar.com"}, "commit"=>"Submit Form"}
+
+Specific parameters of the params hash are accessed like any other nested hash params[:user][:email].
+
+Form Helpers:
+
+form_tag helpers takes all the input to the form .we pass arguments to specify which path to submit and which method to use.
+
+<%= form_tag("/search", method: "get") do %>
+      <%= label_tag(:q, "Search for:") %>
+      <%= text_field_tag(:q) %>
+      <%= submit_tag("Search") %>
+    <% end %>
+Creates the form:
+
+    <form accept-charset="UTF-8" action="/search" method="get">
+      <label for="q">Search for:</label>
+      <input id="q" name="q" type="text" />
+      <input name="commit" type="submit" ivalue="Search" />
+    </form>
+
+Handy Shortcuts form_for :
+it is difficult to remember the specific URL the form must submit.so rails provide easy form_for.
+
++ pass the model object @user .form_for will make the form submit to the URL of the object.
+
++ In form_tag accepted a block without any arguments and the individual input has to be passed using '*_tag'.
+
++ In form_for it passes block a form object and creates form field based on the object 

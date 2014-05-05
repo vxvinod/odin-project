@@ -104,6 +104,13 @@ This saves you time, but, as you'll see later, you'll sometimes want to separate
 MIGRATION :
 Migrations are basically a scripts that tells rails how we need to set up/change  the database.we need to specify correct ruby method(create_table) and its parameters.
 
+VALIDATION:
+Ensure data sent by people is good data.to make this done there are 3 levels of security.
+
+1. Front-end done by javascript.this can be easily hacked.
+2. Validation done from server side (Models) but here when your application running in multiple servers with central repository.there comes problem with two server bring the same data at same time this will end up in mess.
+3. Validation done at database side where when data enters in to database validation is done using add_index: :true. unique: :true
+
 Advantages:
 *access database using user friendly ruby objects.
 *if we want ot blow away database and re-run the migration its easy to do.
