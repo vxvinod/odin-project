@@ -68,3 +68,26 @@ it is difficult to remember the specific URL the form must submit.so rails provi
 + In form_tag accepted a block without any arguments and the individual input has to be passed using '*_tag'.
 
 + In form_for it passes block a form object and creates form field based on the object 
+
+From the Rails Guide:
+
+    # app/controllers/articles_controller.rb
+    def new
+      @article = Article.new
+    end
+
+    #app/views/articles/new.html.erb
+    <%= form_for @article do |f| %>
+      <%= f.text_field :title %>
+      <%= f.text_area :body, size: "60x12" %>
+      <%= f.submit "Create" %>
+    <% end %>
+And the generated HTML is:
+
+    <form accept-charset="UTF-8" action="/articles/create" method="post">
+      <input id="article_title" name="article[title]" type="text" />
+      <textarea id="article_body" name="article[body]" cols="60" rows="12"></textarea>
+      <input name="commit" type="submit" value="Create" />
+    </form>
+
+    The best part about form_for is that if you just pass it a model object like @article in the example above, Rails will check for you if the object has been saved yet. If it's a new object, it will send the form to your #create action. If the object has been saved before, so we know that we're editing an existing object, it will send the object to your #update action instead. This is done by automatically generating the correct URL when the form is created. Magic!
