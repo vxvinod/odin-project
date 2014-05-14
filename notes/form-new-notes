@@ -1,0 +1,41 @@
+Froms and Validation:
+In a form if some validation is set that password field should should not be less than 8 characters and these errors are  caught by object_name.errors. these error are handled using hand methods like #count,#full_messages
+
+ <% if @post.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@post.errors.count, "error") %> prohibited this post from being saved:</h2>
+
+        <ul>
+        <% @post.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+ The Magic in Rails is it can handle the errors automatically.if errors found it automatically wraps up a div element around the field with class name 'field_with_errors'.
+
+ Form LifeCycle:
+
+    # app/controllers/users_controller.rb
+    ...
+    def new
+      @user = User.new
+    end
+
+    def create
+      @user = User.new(user_params)
+      if @user.save
+        redirect_to @user
+      else
+        render :new
+      end
+    end
+
+    def user_params
+      params.require(:user).permit(:first_name, :last_name, :other_stuff)
+    end
+
+    + When  a form clicks on registration page it hits 'new' action and new instalce of object is created but not saved in database and redering new.html.erb 
+
+    +
