@@ -1,0 +1,77 @@
+Cookies-Session-flash:
+
+Cookies:
+Cookies are key-value data pairs that are stored in user browser with expiration date.
+
+* to store shopping cart information,its too easy for user to manipulate their cache and steal/manipulate unsecured cookies.
+
+* to work with cookies rails gives you special hash called cookies cookies[:color]='brown'
+*cookies can be deleted using cookies.delete(:color)
+
+cookies[:name] = { :value => "cookies YUM", :expires => Time.now + 3600}
+
+Session:
+for a user to keep track of all user data on particular session until browser is closed then Rails provide session cookies.
+
+whenever user makes a request to your application. the request will automatically include session cookie and user can keep track of logged-in state.
+
+Rails gives you access to the session hash in an almost identical way to the above-mentioned cookies hash. Use the session variable in your views or controllers like so:
+
+    # app/controllers/users_controller.rb
+    ...
+    # Set a session value
+    session[:current_user_id] = user.id
+
+    # Access a session value
+    some_other_variable_value = session[:other_variable_key]
+
+    # Reset a session key
+    session[:key_to_be_reset] = nil
+
+    # Reset the entire session
+    reset_session
+    ...
+
+   *Session is entire hash that gets put in the secure session cookie that expires when user closes the browser.
+
+   * size of session and cookie is approximately 4kb
+
+Controller Actions:
+some action to be performed before the any controller action.
+
+  # app/controllers/users_controller
+    before_action :require_login
+    ...
+    private
+    def require_login
+      # do stuff to check if user is logged in
+    end
+
+    The before_action method takes the symbol of the method to run before anything else gets run in the controller. If it returns false or nil, the request will not succeed.
+
+You can specify to only apply the filter for specific actions by specifying the only option, e.g. before_action :require_login, :only => [:edit, :update]. The opposite applies by using the :except option... it will run for all actions except those specified.
+
+You'll want to hide your filter methods behind the private designation so they can only be used by that controller.
+
+Finally, filters are inherited so if you'd like a filter to apply to absolutely every controller action, put it in your app/controllers/application_controller.rb file.
+
+Authentication:
+
+Rails doesn't make you do everything yourself. It has a method called #has_secure_password which you just drop into your User model and it will add a lot of the functionality you're looking for. To work with that handy method, you basically set up your User model to handle accepting password and password_confirmation attributes but you won't actually persist those to the database. has_secure_password intercepts those values and converts them into the password digest for you.
+
+
+To initialize a new user session (when your user signs in), you'll need to create a new controller (usually sessions_controller.rb) and the corresponding routes for :new, :create and :destroy. If the user passes the correct credentials (which we can check using the #authenticate method), you'll use the session variable to store their ID, which you can use to validate that they are who they say they are. This is a simple way of authenticating the user that uses Rails' existing session infrastructure, but only lasts as long as the session does.
+
+If your user wants to be "remembered" (you've probably seen the "remember me" checkbox plenty of times on login forms), you need a way to remember them for longer than just the length of the browser session. To do this, you'll need to create another column in your Users table for an encrypted remember_token (or whatever you'd like to call it). You'll use that to store a random string for that user that will be used in the future to identify him/her.
+
+
+A generic step-by-step overview:
+
+Add a column to your Users table to contain the user's password_digest.
+When the user signs up, turn the password they submitted into digest form and then store THAT in the new database column by adding the has_secure_password method to your User model.
+Don't forget any necessary validations for password and password confirmation length.
+Build a sessions controller (and corresponding routes) and use the #authenticate method to sign in the user when the user has submitted the proper credentials using the signin form.
+Allow the user to be remembered by creating a remember_token column in the Users table and saving that token as a permanent cookie in the user's browser. Reset on each new signin.
+On each page load that requires authentication (and using a #before_action in the appropriate controller(s)), first check the user's cookie remember_token against the database to see if he's already signed in. If not, redirect to the signin page.
+Make helper methods as necessary to let you do things like easily determine if a user is signed in or compare another user to the currently signed in user.
+Profit.
